@@ -184,109 +184,14 @@
                                     <i class="fas fa-redo"></i>
                                 </button>
                                 <select id="playbackSpeed" class="bg-transparent border-none text-gray-200 hover:text-primary cursor-pointer transition-colors p-1">
-                                    <option value="0.1">0.1x</option>
+                                    <option value="0.25">0.25x</option>
                                     <option value="0.5">0.5x</option>
+                                    <option value="0.75">0.75x</option>
                                     <option value="1" selected>1x</option>
+                                    <option value="1.25">1.25x</option>
                                     <option value="1.5">1.5x</option>
                                     <option value="2">2x</option>
-                                    <option value="3">3x</option>
-                                    <option value="5">5x</option>
-                                    <option value="10">10x</option>
                                 </select>
-                                <script>
-                                    // Keyboard shortcuts for playback speed
-                                    document.addEventListener('keydown', function(e) {
-                                        const video = document.getElementById('videoPlayer');
-                                        if (!video) return;
-                                        
-                                        const speedSelect = document.getElementById('playbackSpeed');
-                                        let currentSpeed = parseFloat(video.playbackRate);
-                                        
-                                        if (e.key.toLowerCase() === 'd') {
-                                            // Increase speed by 0.1, max 10
-                                            currentSpeed = Math.min(10, Math.round((currentSpeed + 0.1) * 100) / 100);
-                                            video.playbackRate = currentSpeed;
-                                            
-                                            // Update select element or add custom option if needed
-                                            let exists = Array.from(speedSelect.options).some(option => parseFloat(option.value) === currentSpeed);
-                                            if (!exists) {
-                                                let option = new Option(currentSpeed.toFixed(1) + 'x', currentSpeed.toFixed(1));
-                                                let insertIndex = Array.from(speedSelect.options)
-                                                    .findIndex(opt => parseFloat(opt.value) > currentSpeed);
-                                                if (insertIndex === -1) {
-                                                    speedSelect.add(option);
-                                                } else {
-                                                    speedSelect.add(option, insertIndex);
-                                                }
-                                            }
-                                            speedSelect.value = currentSpeed;
-                                            
-                                            // Show speed indicator
-                                            showSpeedIndicator(currentSpeed);
-                                        } else if (e.key.toLowerCase() === 's') {
-                                            // Decrease speed by 0.1, min 0.1
-                                            currentSpeed = Math.max(0.1, Math.round((currentSpeed - 0.1) * 100) / 100);
-                                            video.playbackRate = currentSpeed;
-                                            
-                                            // Update select element or add custom option if needed
-                                            let exists = Array.from(speedSelect.options).some(option => parseFloat(option.value) === currentSpeed);
-                                            if (!exists) {
-                                                let option = new Option(currentSpeed.toFixed(1) + 'x', currentSpeed.toFixed(1));
-                                                let insertIndex = Array.from(speedSelect.options)
-                                                    .findIndex(opt => parseFloat(opt.value) > currentSpeed);
-                                                if (insertIndex === -1) {
-                                                    speedSelect.add(option);
-                                                } else {
-                                                    speedSelect.add(option, insertIndex);
-                                                }
-                                            }
-                                            speedSelect.value = currentSpeed;
-                                            
-                                            // Show speed indicator
-                                            showSpeedIndicator(currentSpeed);
-                                        }
-                                    });
-
-                                    // Function to show speed indicator
-                                    function showSpeedIndicator(speed) {
-                                        // Create or get existing indicator
-                                        let indicator = document.getElementById('speedIndicator');
-                                        if (!indicator) {
-                                            indicator = document.createElement('div');
-                                            indicator.id = 'speedIndicator';
-                                            indicator.style.position = 'absolute';
-                                            indicator.style.top = '20px';
-                                            indicator.style.right = '20px';
-                                            indicator.style.padding = '8px 16px';
-                                            indicator.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                                            indicator.style.color = 'white';
-                                            indicator.style.borderRadius = '4px';
-                                            indicator.style.zIndex = '1000';
-                                            indicator.style.transition = 'opacity 0.2s';
-                                            document.getElementById('videoContainer').appendChild(indicator);
-                                        }
-
-                                        // Update speed text and show
-                                        indicator.textContent = speed.toFixed(1) + 'x';
-                                        indicator.style.opacity = '1';
-
-                                        // Hide after 1.5 seconds
-                                        clearTimeout(indicator.fadeTimeout);
-                                        indicator.fadeTimeout = setTimeout(() => {
-                                            indicator.style.opacity = '0';
-                                        }, 1500);
-                                    }
-
-                                    // Update speed when select changes manually
-                                    document.getElementById('playbackSpeed').addEventListener('change', function(e) {
-                                        const video = document.getElementById('videoPlayer');
-                                        if (video) {
-                                            const speed = parseFloat(this.value);
-                                            video.playbackRate = speed;
-                                            showSpeedIndicator(speed);
-                                        }
-                                    });
-                                </script>
                                 <button id="fullscreenBtn" class="p-1 hover:text-primary transition-colors" title="Full screen">
                                     <i class="fas fa-expand"></i>
                                 </button>
@@ -439,6 +344,6 @@
     <!-- Confetti Canvas -->
     <canvas id="confettiCanvas" class="hidden"></canvas>
     
-    <script src="renderer.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
