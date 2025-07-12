@@ -23,6 +23,7 @@ const themeIcon = document.getElementById('themeIcon');
 const videoTitleText = document.getElementById('videoTitleText');
 const checkBtn = document.getElementById('checkBtn');
 const confettiCanvas = document.getElementById('confettiCanvas');
+const backButton = document.getElementById('backButton');
 
 // Theme Toggle
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -43,6 +44,26 @@ function updateTheme() {
         themeIcon.className = 'fas fa-sun text-yellow-400';
     }
 }
+
+// Back Button Handler
+backButton.addEventListener('click', () => {
+    // Stop video playback
+    videoPlayer.pause();
+    videoPlayer.src = '';
+    
+    // Reset UI elements
+    videoTitleText.textContent = 'Untitled Video';
+    progress.style.width = '0%';
+    timeDisplay.textContent = '0:00 / 0:00';
+    playPauseBtn.querySelector('i').className = 'fas fa-play';
+    
+    // Show upload section, hide player section
+    uploadSection.classList.remove('hidden');
+    playerSection.classList.add('hidden');
+    
+    // Clear file input
+    fileInput.value = '';
+});
 
 // File Upload Handling
 dropZone.addEventListener('dragover', (e) => {
@@ -333,9 +354,6 @@ const pomodoroStart = document.getElementById('pomodoroStart');
 const pomodoroPause = document.getElementById('pomodoroPause');
 const pomodoroReset = document.getElementById('pomodoroReset');
 const pomodoroProgress = document.getElementById('pomodoroProgress');
-const focusButton = document.getElementById('focusButton');
-const shortBreakButton = document.getElementById('shortBreakButton');
-const longBreakButton = document.getElementById('longBreakButton');
 const workDuration = document.getElementById('workDuration');
 const shortBreakDuration = document.getElementById('shortBreakDuration');
 const longBreakDuration = document.getElementById('longBreakDuration');
@@ -344,6 +362,9 @@ const autoStartNext = document.getElementById('autoStartNext');
 const pomsToday = document.getElementById('pomsToday');
 const focusTime = document.getElementById('focusTime');
 const exportPomodoroLog = document.getElementById('exportPomodoroLog');
+const focusButton = document.getElementById('focusButton');
+const shortBreakButton = document.getElementById('shortBreakButton');
+const longBreakButton = document.getElementById('longBreakButton');
 
 let timer;
 let isRunning = false;
@@ -416,7 +437,7 @@ function updateDisplay() {
     pomodoroProgress.style.strokeDashoffset = 339.292 - progress;
     
     // Update session display
-    pomodoroSession.textContent = currentSession === 'work' ? 'Work' :
+    pomodoroSession.textContent = currentSession === 'work' ? 'Focus' :
                                  currentSession === 'short' ? 'Short Break' : 'Long Break';
 }
 
@@ -496,6 +517,11 @@ function changeTimerMode(mode) {
     updateTimerModeButtons();
 }
 
+// Event listeners for pomodoro controls
+pomodoroStart.addEventListener('click', startTimer);
+pomodoroPause.addEventListener('click', pauseTimer);
+pomodoroReset.addEventListener('click', resetTimer);
+
 // Add event listeners for mode buttons
 focusButton.addEventListener('click', () => changeTimerMode('work'));
 shortBreakButton.addEventListener('click', () => changeTimerMode('short'));
@@ -506,7 +532,7 @@ exportPomodoroLog.addEventListener('click', () => {
     const csv = [
         ['Timestamp', 'Session Type', 'Duration (minutes)'],
         ...pomodoroLog.map(log => [log.timestamp, log.type, log.duration])
-    ].map(row => row.join(',')).join('\\n');
+    ].map(row => row.join(',')).join('\n');
     
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -605,7 +631,7 @@ exportTasks.addEventListener('click', () => {
     const csv = [
         ['Task', 'Pomodoros', 'Completed'],
         ...todos.map(todo => [todo.text, todo.poms || '', todo.completed ? 'Yes' : 'No'])
-    ].map(row => row.join(',')).join('\\n');
+    ].map(row => row.join(',')).join('\n');
     
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -616,28 +642,6 @@ exportTasks.addEventListener('click', () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-});
-
-// Initialize back button
-const backButton = document.getElementById('backButton');
-
-backButton.addEventListener('click', () => {
-    // Stop video playback
-    videoPlayer.pause();
-    videoPlayer.src = '';
-    
-    // Reset UI elements
-    videoTitleText.textContent = 'Untitled Video';
-    progress.style.width = '0%';
-    timeDisplay.textContent = '0:00 / 0:00';
-    playPauseBtn.querySelector('i').className = 'fas fa-play';
-    
-    // Show upload section, hide player section
-    uploadSection.classList.remove('hidden');
-    playerSection.classList.add('hidden');
-    
-    // Clear file input
-    fileInput.value = '';
 });
 
 // Initial render

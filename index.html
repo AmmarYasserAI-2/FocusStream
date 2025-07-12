@@ -20,17 +20,24 @@
         }
     </script>
     <style>
-        .theme-toggle {
-            transition: transform 0.2s;
-        }
-        .theme-toggle:active {
-            transform: rotate(20deg) scale(1.1);
-        }
         .confetti {
             pointer-events: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 9999;
+        }
+        #progressContainer {
+            cursor: pointer;
+        }
+        .pomodoro-circle {
+            transform: rotate(-90deg);
+        }
+        .pomodoro-circle circle {
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+        }
+        .form-checkbox {
+            color: var(--primary);
         }
     </style>
 </head>
@@ -114,7 +121,7 @@
                             <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-500 mb-4 group-hover:text-primary transition-colors"></i>
                             <p class="text-gray-600 dark:text-gray-400 font-medium">Drop your video here to start flowing</p>
                             <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">Ready for your biggest files • Up to 20GB</p>
-                            <input type="file" id="fileInput" class="hidden" accept="video/mp4">
+                            <input type="file" id="fileInput" class="hidden" accept="video/*">
                         </div>
                     </div>
                     <div id="uploadProgress" class="hidden mt-4">
@@ -125,7 +132,8 @@
                 </div>
             </div>
         </div>
-        <!-- Video Player Section -->
+    
+    <!-- Video Player Section -->
         <div id="playerSection" class="hidden">
             <div class="w-full max-w-4xl mx-auto bg-white dark:bg-black rounded-lg shadow-lg overflow-hidden relative">
                 <!-- Video Title Above Player -->
@@ -198,83 +206,141 @@
                 <!-- Confetti Canvas -->
                 <canvas id="confettiCanvas" class="confetti hidden"></canvas>
             </div>
-            <!-- Pomodoro & To-Do Section -->
-            <div class="w-full max-w-4xl mx-auto mt-8 space-y-8">
-                <!-- Pomodoro Timer Section -->
-                <section id="pomodoroSection" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
-                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-white"><i class="fas fa-clock"></i> Pomodoro Timer</h2>
-                    <div class="flex flex-col items-center w-full">
-                        <div class="flex gap-2 mb-4 w-full justify-center">
-                            <button id="focusButton" class="px-4 py-2 rounded-full transition font-medium flex items-center gap-2">
-                                <i class="fas fa-brain"></i> Focus
-                            </button>
-                            <button id="shortBreakButton" class="px-4 py-2 rounded-full transition font-medium flex items-center gap-2">
-                                <i class="fas fa-coffee"></i> Break
-                            </button>
-                            <button id="longBreakButton" class="px-4 py-2 rounded-full transition font-medium flex items-center gap-2">
-                                <i class="fas fa-couch"></i> Long Break
-                            </button>
-                        </div>
-                        <div class="relative mb-4">
-                            <svg id="pomodoroCircle" width="120" height="120">
-                                <circle cx="60" cy="60" r="54" stroke="#e5e7eb" stroke-width="10" fill="none"/>
-                                <circle id="pomodoroProgress" cx="60" cy="60" r="54" stroke="#3B82F6" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="0"/>
+            
+            <!-- Productivity Column -->
+            <div class="space-y-8">
+                <!-- Pomodoro Timer -->
+                <div class="bg-white dark:bg-gray-700 rounded-lg p-6 shadow">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Pomodoro Timer</h3>
+                    
+                    <!-- Timer Display -->
+                    <div class="flex flex-col items-center mb-4">
+                        <!-- Progress Circle -->
+                        <div class="relative w-48 h-48 mb-4">
+                            <svg class="pomodoro-circle w-48 h-48">
+                                <circle cx="96" cy="96" r="54" stroke="#E5E7EB" stroke-width="8" fill="none" />
+                                <circle id="pomodoroProgress" cx="96" cy="96" r="54" stroke="#3B82F6" stroke-width="8" fill="none" />
                             </svg>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="pomodoroSession" class="text-lg font-semibold text-gray-700 dark:text-gray-200"></span>
-                                <span id="pomodoroTime" class="text-3xl font-mono font-bold text-gray-900 dark:text-white"></span>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-800 dark:text-white">
+                                <span id="pomodoroTime" class="text-4xl font-bold">25:00</span>
+                                <span id="pomodoroSession" class="text-sm">Focus</span>
                             </div>
                         </div>
+                        
+                        <!-- Timer Controls -->
                         <div class="flex gap-2 mb-4">
-                            <button id="pomodoroStart" class="bg-primary text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 transition"><i class="fas fa-play"></i> Start</button>
-                            <button id="pomodoroPause" class="bg-yellow-500 text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-yellow-600 transition"><i class="fas fa-pause"></i> Pause</button>
-                            <button id="pomodoroReset" class="bg-gray-400 text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-gray-500 transition"><i class="fas fa-undo"></i> Reset</button>
+                            <button id="focusButton" class="px-3 py-1 rounded text-sm font-medium bg-primary text-white">
+                                <i class="fas fa-brain mr-1"></i> Focus
+                            </button>
+                            <button id="shortBreakButton" class="px-3 py-1 rounded text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-600">
+                                <i class="fas fa-coffee mr-1"></i> Short Break
+                            </button>
+                            <button id="longBreakButton" class="px-3 py-1 rounded text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-600">
+                                <i class="fas fa-couch mr-1"></i> Long Break
+                            </button>
                         </div>
-                        <div class="flex flex-wrap gap-4 mb-4 w-full justify-center">
-                            <div class="flex flex-col items-center">
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Work (min)</label>
-                                <input id="workDuration" type="number" min="1" max="120" class="w-16 p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-center" value="25">
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Short Break</label>
-                                <input id="shortBreakDuration" type="number" min="1" max="60" class="w-16 p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-center" value="5">
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Long Break</label>
-                                <input id="longBreakDuration" type="number" min="1" max="60" class="w-16 p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-center" value="15">
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Poms till Long</label>
-                                <input id="pomsTillLong" type="number" min="1" max="10" class="w-16 p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-center" value="4">
-                            </div>
+                        
+                        <!-- Timer Buttons -->
+                        <div class="flex gap-2">
+                            <button id="pomodoroStart" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
+                                <i class="fas fa-play mr-1"></i> Start
+                            </button>
+                            <button id="pomodoroPause" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 hidden">
+                                <i class="fas fa-pause mr-1"></i> Pause
+                            </button>
+                            <button id="pomodoroReset" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                                <i class="fas fa-rotate mr-1"></i> Reset
+                            </button>
                         </div>
-                        <div class="flex items-center gap-2 mb-4">
-                            <input id="autoStartNext" type="checkbox" class="form-checkbox rounded text-primary">
-                            <label for="autoStartNext" class="text-sm text-gray-700 dark:text-gray-300">Auto-start next session</label>
-                        </div>
-                        <div class="flex flex-col items-center gap-1 mb-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-300">Pomodoros today: <span id="pomsToday" class="font-bold">0</span></span>
-                            <span class="text-sm text-gray-600 dark:text-gray-300">Focused time: <span id="focusTime" class="font-bold">0</span> min</span>
-                        </div>
-                        <button id="exportPomodoroLog" class="mt-2 text-xs text-primary hover:underline flex items-center gap-1"><i class="fas fa-file-csv"></i> Export Log</button>
                     </div>
-                </section>
-                <!-- To-Do List Section -->
-                <section id="todoSection" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
-                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-white"><i class="fas fa-list-check"></i> To-Do List</h2>
-                    <form id="todoForm" class="flex gap-2 mb-4">
-                        <input id="todoInput" type="text" class="flex-1 p-2 rounded border dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Add a new task..." required>
-                        <input id="todoPoms" type="number" min="1" max="10" class="w-16 p-2 rounded border dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Poms" title="Pomodoro estimate">
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition"><i class="fas fa-plus"></i> Add</button>
+                    
+                    <!-- Timer Settings -->
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div class="flex justify-between items-center">
+                            <label for="workDuration"><i class="fas fa-clock mr-1"></i> Work Duration (min)</label>
+                            <input type="number" id="workDuration" class="w-16 p-1 bg-gray-100 dark:bg-gray-600 rounded text-gray-800 dark:text-white" value="25" min="1">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label for="shortBreakDuration"><i class="fas fa-mug-hot mr-1"></i> Short Break (min)</label>
+                            <input type="number" id="shortBreakDuration" class="w-16 p-1 bg-gray-100 dark:bg-gray-600 rounded text-gray-800 dark:text-white" value="5" min="1">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label for="longBreakDuration"><i class="fas fa-bed mr-1"></i> Long Break (min)</label>
+                            <input type="number" id="longBreakDuration" class="w-16 p-1 bg-gray-100 dark:bg-gray-600 rounded text-gray-800 dark:text-white" value="15" min="1">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label for="pomsTillLong"><i class="fas fa-list-ol mr-1"></i> Pomodoros until long break</label>
+                            <input type="number" id="pomsTillLong" class="w-16 p-1 bg-gray-100 dark:bg-gray-600 rounded text-gray-800 dark:text-white" value="4" min="1">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label for="autoStartNext"><i class="fas fa-forward mr-1"></i> Auto-start next session</label>
+                            <input type="checkbox" id="autoStartNext" class="form-checkbox rounded bg-gray-100 dark:bg-gray-600 text-primary">
+                        </div>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                            <span><i class="fas fa-chart-bar mr-1"></i> Pomodoros today:</span>
+                            <span id="pomsToday">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                            <span><i class="fas fa-hourglass-half mr-1"></i> Total focus minutes:</span>
+                            <span id="focusTime">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Export Button -->
+                    <button id="exportPomodoroLog" class="mt-4 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-500">
+                        <i class="fas fa-download mr-1"></i> Export Log
+                    </button>
+                    <button id="checkBtn" class="mt-4 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">
+                        Check
+                    </button>
+                </div>
+                
+                <!-- Task List -->
+                <div class="bg-white dark:bg-gray-700 rounded-lg p-6 shadow">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+                        <i class="fas fa-tasks mr-2"></i>Task List
+                    </h3>
+                    
+                    <!-- Add Task Form -->
+                    <form id="todoForm" class="mb-4 space-y-2">
+                        <div class="relative">
+                            <i class="fas fa-pencil absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="todoInput" placeholder="Add a new task..." 
+                                   class="w-full p-2 pl-10 rounded bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-white">
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="relative flex-shrink-0">
+                                <i class="fas fa-clock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="number" id="todoPoms" placeholder="Pomodoros" 
+                                       class="w-24 p-2 pl-10 rounded bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-white">
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
+                                <i class="fas fa-plus mr-1"></i> Add Task
+                            </button>
+                        </div>
                     </form>
-                    <ul id="todoList" class="flex-1 space-y-2 overflow-y-auto"></ul>
-                    <button id="exportTasks" class="mt-4 text-xs text-primary hover:underline flex items-center gap-1"><i class="fas fa-file-csv"></i> Export Tasks</button>
-                </section>
+                    
+                    <!-- Task List -->
+                    <ul id="todoList" class="space-y-2">
+                        <!-- Tasks will be added here dynamically -->
+                    </ul>
+                    
+                    <!-- Export Button -->
+                    <button id="exportTasks" class="mt-4 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-500">
+                        <i class="fas fa-file-export mr-1"></i> Export Tasks
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- Scripts -->
+    </section>
+    
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas" class="hidden"></canvas>
+    
     <script src="renderer.js"></script>
 </body>
 </html>
-
